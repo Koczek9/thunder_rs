@@ -55,8 +55,7 @@ impl thunder_rs::Plugin for SamplePlugin {
   }
 }
 
-fn sample_plugin_init(conf: thunder_rs::PluginConfig) -> Box<dyn thunder_rs::Plugin> {
-  println!("conf:{:?}", conf);
+fn sample_plugin_init() -> Box<dyn thunder_rs::Plugin> {
   Box::new(SamplePlugin{ })
 }
 

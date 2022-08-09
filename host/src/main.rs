@@ -172,20 +172,7 @@ fn load_plugin(lib: &Box<libloading::Library>) -> Box<dyn thunder_rs::Plugin> {
     let sym : libloading::Symbol< *mut thunder_rs::ServiceMetadata > = lib.get(b"thunder_service_metadata\0").unwrap();
     let service_metadata = ptr::NonNull::new(*sym as *mut thunder_rs::ServiceMetadata).unwrap().as_mut();
     println!("RUST REMOTE: load_plugin = {}", service_metadata.name);
-
-    let auth_token;
-    if let Ok(jwt) = std::env::var("THUNDER_SECURITY_TOKEN") {
-      auth_token = jwt;
-    }
-    else {
-      auth_token = String::new();
-    }
-
-    let plugin_config = thunder_rs::PluginConfig {
-      auth_token: auth_token
-    };
-
-    (service_metadata.create)(plugin_config)
+    (service_metadata.create)()
   }
 }
 

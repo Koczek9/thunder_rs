@@ -81,7 +81,7 @@ impl thunder_rs::Plugin for Calculator {
   fn on_client_disconnect(&mut self, _channel_id: u32) { }
 }
 
-fn sample_plugin_init(_conf: thunder_rs::PluginConfig) -> Box<dyn thunder_rs::Plugin> {
+fn sample_plugin_init() -> Box<dyn thunder_rs::Plugin> {
   Box::new(Calculator{ })
 }
 

@@ -22,11 +22,6 @@ use std::sync::mpsc::Sender;
 
 type SendToFunction = unsafe extern "C" fn (u32, *const c_char, u32);
 
-#[derive(Debug)]
-pub struct PluginConfig {
-  pub auth_token: String
-}
-
 pub trait Plugin {
   fn on_message(&mut self, json: String, ctx: RequestContext);
   fn on_client_connect(&mut self, channel: u32);
@@ -59,7 +54,7 @@ impl RequestContext {
 pub struct ServiceMetadata {
   pub name: &'static str,
   pub version: (u32, u32, u32),
-  pub create: fn (conf: PluginConfig) -> Box<dyn Plugin>
+  pub create: fn () -> Box<dyn Plugin>
 }
 
 #[macro_export]
@@ -124,17 +119,12 @@ impl CPlugin {
 
 #[no_mangle]
 pub extern fn wpe_rust_plugin_create(_name: *const c_char, send_func: SendToFunction,
-  plugin_ctx: u32, auth_token: *const c_char, meta_data: *mut ServiceMetadata) -> *mut CPlugin
+  plugin_ctx: u32, meta_data: *mut ServiceMetadata) -> *mut CPlugin
 {
   assert!(!meta_data.is_null());
-  assert!(!auth_token.is_null());
-
-  let config = PluginConfig {
-    auth_token: cstr_to_string(auth_token)
-  };
 
   let service_metadata = unsafe{ &*meta_data };
-  let plugin: Box<dyn Plugin> = (service_metadata.create)(config);
+  let plugin: Box<dyn Plugin> = (service_metadata.create)();
   let name: String = service_metadata.name.to_string();
 
   let (tx, rx) = std::sync::mpsc::channel::<Message>();
